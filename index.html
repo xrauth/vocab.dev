@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Palavras</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--u:min(1vw,4.4px);--bg:#f6f5f0;--card:#f9f9f6;--tile:#f7f7f3;--ink:#1c1c17;--mute:#66665f;--line:#d8d7d1;
+--s1:0 2px 8px rgba(40,40,30,.10),0 1px 2px rgba(40,40,30,.06);
+--s2:0 18px 44px rgba(40,40,30,.12),0 3px 8px rgba(40,40,30,.06);
+--s3:0 3px 10px rgba(40,40,30,.10),0 1px 2px rgba(40,40,30,.06);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+:root{color-scheme:light}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+#app{width:calc(100*var(--u));margin:0 auto;padding:4*var(--u) 0 8px;padding:calc(4*var(--u)) calc(4*var(--u)) 24px;box-sizing:border-box;min-height:100vh}
+.top{display:flex;justify-content:space-between;align-items:center}
+.l{display:flex;align-items:center;gap:calc(2.4*var(--u))}
+.pill{position:relative;display:flex;align-items:center;height:calc(6.8*var(--u));padding:0 calc(2.8*var(--u));border-radius:calc(3.4*var(--u));background:var(--card);box-shadow:var(--s1);font-size:calc(2.9*var(--u));font-weight:600;color:var(--mute);gap:calc(1.6*var(--u))}
+.pill select{appearance:none;-webkit-appearance:none;border:0;background:none;font:inherit;color:inherit;padding:0 calc(3.2*var(--u)) 0 0;outline:0;cursor:pointer}
+.pill svg{width:calc(2.6*var(--u));height:calc(2.6*var(--u));position:absolute;right:calc(2.6*var(--u));pointer-events:none}
+.pill.s svg{position:static;width:calc(4.2*var(--u));height:calc(4.2*var(--u))}
+#sw{border:0;background:none;color:var(--mute);padding:0;cursor:pointer;display:flex}
+#sw svg{width:calc(3.6*var(--u));height:calc(3.6*var(--u))}
+.sc{text-align:center;margin-top:calc(8*var(--u))}
+.sc b{display:block;font-size:calc(2.9*var(--u));font-weight:500;letter-spacing:.3em;color:var(--mute);text-indent:.3em}
+.sc span{display:block;font-size:calc(9.6*var(--u));font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-top:calc(1.2*var(--u))}
+.scene{width:calc(60*var(--u));height:calc(60*var(--u));margin:calc(9*var(--u)) auto 0;perspective:calc(220*var(--u))}
+.in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.45,.05,.2,1)}
+.f{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border-radius:calc(7*var(--u));box-shadow:var(--s2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 calc(4*var(--u));box-sizing:border-box;cursor:pointer}
+.f.b{transform:rotateY(180deg)}
+.w{height:calc(15*var(--u));display:flex;align-items:center;justify-content:center;white-space:pre;line-height:1;font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.02em}
+.w.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:0}
+.p{font-size:calc(3.4*var(--u));font-weight:500;color:var(--mute);margin-top:calc(1.4*var(--u))}
+.hr{display:block;width:calc(23*var(--u));height:calc(.5*var(--u));min-height:2px;background:var(--line);border-radius:4px;margin:calc(4.6*var(--u)) 0 calc(4*var(--u))}
+.t{font-size:calc(5.4*var(--u));font-weight:600;letter-spacing:-.01em}
+#kb{margin-top:calc(11*var(--u));height:calc(44*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(2*var(--u))}
+.row{display:flex;gap:calc(2*var(--u))}
+.k{width:calc(11.6*var(--u));height:calc(13*var(--u));border:0;border-radius:calc(2.4*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(6.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .35s ease;padding:0}
+.k.on{opacity:1}
+.out .sc,.out .scene,.out #kb,.out #cntp{display:none}#login{display:none;border:0;cursor:pointer;font-family:inherit}.out #login{display:flex}
+@media (prefers-reduced-motion:reduce){.in{transition-duration:.01s}}
+</style>
+</head>
+<body>
+<div id="app" class="out">
+ <div class="top">
+  <div class="l">
+   <label class="pill"><select id="tr"></select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
+   <button id="sw" aria-label="trocar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4 4-4-4 4-4"/></svg></button>
+   <label class="pill"><select id="mn"></select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
+  </div>
+  <div class="pill s" id="cntp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5ZM12 6.5v13"/></svg><span><span id="cnt">0</span> palavras</span></div>
+  <button class="pill" id="login">Entrar com Google</button>
+ </div>
+ <div class="sc"><b>SCORE</b><span id="score">1000</span></div>
+ <div class="scene"><div class="in" id="in"><div class="f"></div><div class="f b"></div></div></div>
+ <div id="kb"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPA_URL='https://SEU-PROJETO.supabase.co',SUPA_KEY='SUA-CHAVE-PUBLICA';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+const $=s=>document.querySelector(s),sT=$('#tr'),sM=$('#mn'),inn=$('#in'),faces=inn.children,kb=$('#kb'),app=$('#app');
+['pt','en','es','de'].forEach(l=>[sT,sM].forEach(s=>s.add(new Option(l.toUpperCase(),l))));
+let cfg={tr:'pt',mn:'de'},S,user=null,WORDS={},buf=[],dirty=new Set(),dirtyS=false,fl=null;
+let cur=null,face=0,angle=0,busy=true,review=false,chars=[],exp=0,done=false;
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('wp3cfg')))}catch(e){}
+sT.value=cfg.tr;sM.value=cfg.mn;
+const pair=()=>cfg.tr+'-'+cfg.mn,lk=()=>'wp3:'+user.id+':'+pair();
+const draw=()=>{$('#score').textContent=Math.round(S.score);$('#cnt').textContent=S.count};
+const local=()=>{try{localStorage.setItem(lk(),JSON.stringify({S,d:[...dirty],ds:dirtyS}))}catch(e){}};
+const addW=r=>{WORDS[r.id]={id:r.id,f:r.f,...r.w}};
+
+/* ---------- servidor ---------- */
+async function ensure(ids){
+  const m=ids.filter(i=>!WORDS[i]);if(!m.length)return;
+  const{data,error}=await sb.rpc('words_by_id',{p_ids:m});if(error)throw error;data.forEach(addW);
+}
+async function refill(){
+  await flush();
+  const{data,error}=await sb.rpc('new_words',{p_pair:pair(),p_lv:S.lv,p_n:8,p_exclude:[...buf,...(cur?[cur]:[])]});
+  if(error)throw error;
+  data.forEach(r=>{addW(r);if(!S.w[r.id]&&!buf.includes(r.id))buf.push(r.id)});
+}
+async function flush(){
+  if(fl)await fl;
+  if(!user||!navigator.onLine||(!dirty.size&&!dirtyS))return;
+  const ids=[...dirty],p=pair(),ds=dirtyS,uid=user.id,Sn=S;
+  dirty=new Set();dirtyS=false;
+  fl=(async()=>{
+    try{
+      if(ids.length){const{error}=await sb.from('progress').upsert(ids.map(i=>({user_id:uid,pair:p,word_id:i,due:Sn.w[i].due,iv:Sn.w[i].iv,k:Sn.w[i].k})),{onConflict:'user_id,pair,word_id'});if(error)throw error}
+      if(ds){const{error}=await sb.from('state').upsert({user_id:uid,pair:p,score:Sn.score,known:Sn.count,turn:Sn.turn,games:Sn.games,lv:Sn.lv},{onConflict:'user_id,pair'});if(error)throw error}
+    }catch(e){ids.forEach(i=>dirty.add(i));dirtyS=dirtyS||ds}
+    fl=null;
+  })();
+  await fl;
+}
+async function all(t,cols,p){
+  let o=0,r=[];
+  for(;;){const{data,error}=await sb.from(t).select(cols).eq('user_id',user.id).eq('pair',p).range(o,o+999);if(error)throw error;r=r.concat(data);if(data.length<1000)return r;o+=1000}
+}
+async function loadPair(){
+  busy=true;cur=null;buf=[];clearKb();
+  const p=pair(),[pr,st]=await Promise.all([all('progress','word_id,due,iv,k',p),all('state','score,known,turn,games,lv',p)]);
+  const s0=st[0]||{};
+  S={score:s0.score??1000,count:s0.known??0,turn:s0.turn??0,games:s0.games??0,lv:s0.lv??100,w:{}};
+  pr.forEach(r=>S.w[r.word_id]={due:r.due,iv:r.iv,k:r.k});
+  dirty=new Set();dirtyS=false;
+  try{ // alterações locais que ainda não chegaram ao servidor
+    const l=JSON.parse(localStorage.getItem(lk()));
+    if(l){if(l.ds){Object.assign(S,l.S,{w:S.w});dirtyS=true}
+      l.d.forEach(i=>{if(l.S.w[i]){S.w[i]=l.S.w[i];dirty.add(i)}})}
+  }catch(e){}
+  draw();next();
+}
+
+/* ---------- jogo ---------- */
+function fill(f,row,rev){
+  const m=row[cfg.mn],t=row[cfg.tr],len=[...m.w].length;
+  f.innerHTML='<div class="w'+(rev?' m':'')+'"></div><div class="p"></div><i class="hr"></i><div class="t"></div>';
+  f.children[0].textContent=rev?' '.repeat(len):m.w;
+  f.children[0].style.fontSize=`calc(${Math.min(12.5,50/(len*(rev?.62:.54)))} * var(--u))`;
+  f.children[1].textContent=m.p+(m.g?` (${m.g})`:'');
+  f.children[3].textContent=t.w;
+}
+function clearKb(){kb.querySelectorAll('.k').forEach(k=>{k.classList.remove('on');k.style.transitionDelay='0s'});setTimeout(()=>{if(busy)kb.innerHTML=''},400)}
+function present(id,first){
+  const first_=first;cur=id;review=!!S.w[id];done=false;busy=true;clearKb();
+  const row=WORDS[id];
+  if(first_){fill(faces[face],row,review);setTimeout(ready,50);return}
+  face^=1;fill(faces[face],row,review);angle+=180;inn.style.transform=`rotateY(${angle}deg)`;
+  setTimeout(ready,760);
+}
+function ready(){busy=false;if(review)typing()}
+const pickNew=()=>{
+  buf=buf.filter(i=>!S.w[i]);let b=null;const d=i=>Math.abs(WORDS[i].f-S.lv);
+  for(const i of buf)if(b===null||d(i)<d(b)||(d(i)===d(b)&&WORDS[i].f>WORDS[b].f))b=i;
+  return b;
+};
+const warm=()=>{
+  const ids=Object.keys(S.w).filter(k=>!WORDS[k]).sort((a,b)=>S.w[a].due-S.w[b].due).slice(0,10);
+  if(ids.length)ensure(ids).catch(()=>{});
+};
+async function next(){
+  busy=true;const t=S.turn+1,first=cur===null;
+  let id=null,md=1e9;
+  for(const k in S.w)if(k!==cur&&S.w[k].due<=t&&S.w[k].due<md){md=S.w[k].due;id=k}
+  try{
+    if(!id){if(buf.length<3)await refill();id=pickNew()}
+    if(!id){md=1e9;for(const k in S.w)if(k!==cur&&S.w[k].due<md){md=S.w[k].due;id=k}}
+    if(!id)id=cur;
+    await ensure([id]);
+  }catch(e){setTimeout(next,2500);return}
+  S.turn=t;dirtyS=true;local();present(id,first);warm();
+}
+function typing(){
+  chars=[...WORDS[cur][cfg.mn].w];exp=0;
+  const O=chars.map(c=>c.toLowerCase());let L=O,best=1e9;
+  for(let t=0;t<300&&best>0;t++){
+    const A=[...O];for(let i=A.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[A[i],A[j]]=[A[j],A[i]]}
+    let s=0;A.forEach((c,i)=>{if(c===O[i])s+=2;if(i&&O.some((o,k)=>k&&O[k-1]===A[i-1]&&o===c))s++});
+    if(s<best){best=s;L=A}
+  }
+  kb.innerHTML='';let n=0,sz=5,d=0;
+  while(n<L.length){
+    const r=document.createElement('div');r.className='row';
+    L.slice(n,n+sz).forEach(c=>{const b=document.createElement('button');b.className='k';b.textContent=c;b.dataset.c=c;b.style.transitionDelay=(d++*50)+'ms';b.onclick=()=>press(b);r.appendChild(b)});
+    kb.appendChild(r);n+=sz;sz=Math.max(1,sz-1);
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(()=>kb.querySelectorAll('.k').forEach(k=>k.classList.add('on'))));
+}
+function press(b){
+  if(busy||done||b.dataset.u)return;
+  b.dataset.u=1;b.style.transitionDelay='0s';b.classList.remove('on');b.style.pointerEvents='none';
+  if(b.dataset.c===chars[exp].toLowerCase()){
+    exp++;faces[face].children[0].textContent=chars.map((c,i)=>i<exp?c:' ').join('');
+    if(exp===chars.length)finish(true);
+  }else finish(false);
+}
+function finish(ok){
+  done=true;busy=true;
+  const row=WORDS[cur],D=800+(100-row.f)*12+(chars.length-5)*20;
+  const E=1/(1+Math.pow(10,(D-S.score)/400)),K=32*Math.max(.3,1-S.games/200);
+  S.score=Math.max(0,S.score+(ok?K*(1-E):-1.5*K*E));S.games++;
+  const w=S.w[cur];
+  if(ok){w.iv=Math.ceil(w.iv*2.5);if(!w.k){w.k=1;S.count++}}else{w.iv=Math.max(2,Math.floor(w.iv/3));if(w.k){w.k=0;S.count--}}
+  w.due=S.turn+w.iv;S.lv=Math.min(100,Math.max(10,S.lv+(ok?-2.5:4)));
+  dirty.add(cur);dirtyS=true;local();setTimeout(flush,300);
+  faces[face].children[0].textContent=chars.join('');
+  kb.querySelectorAll('.k').forEach(k=>{k.style.transitionDelay='0s';k.classList.remove('on')});
+  draw();
+  setTimeout(next,ok?700:1600);
+}
+faces[0].onclick=faces[1].onclick=()=>{
+  if(busy||review||!user)return;
+  S.w[cur]={iv:3,due:S.turn+3,k:0};dirty.add(cur);dirtyS=true;local();busy=true;next();
+};
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey||!user)return;
+  if(!review&&(e.key==='Enter'||e.key===' ')){e.preventDefault();faces[face].click();return}
+  if(e.key.length===1){const t=[...kb.querySelectorAll('.k')].find(k=>!k.dataset.u&&k.dataset.c===e.key.toLowerCase());if(t)press(t)}
+});
+
+/* ---------- idiomas, login, sincronização ---------- */
+async function setPair(tr,mn){
+  busy=true;await flush();local();
+  cfg={tr,mn};sT.value=tr;sM.value=mn;
+  try{localStorage.setItem('wp3cfg',JSON.stringify(cfg))}catch(e){}
+  loadPair().catch(console.error);
+}
+sT.onchange=()=>setPair(sT.value,sT.value===cfg.mn?cfg.tr:cfg.mn);
+sM.onchange=()=>setPair(sM.value===cfg.tr?cfg.mn:cfg.tr,sM.value);
+$('#sw').onclick=()=>setPair(cfg.mn,cfg.tr);
+$('#login').onclick=()=>sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+$('#cntp').onclick=async()=>{if(confirm('Sair?')){await flush();await sb.auth.signOut()}};
+sb.auth.onAuthStateChange((ev,ses)=>{
+  const u=ses?.user||null;if(u?.id===user?.id)return;
+  user=u;app.classList.toggle('out',!u);
+  if(u)loadPair().catch(console.error);
+  else{WORDS={};buf=[];cur=null;clearKb()}
+});
+setInterval(flush,15000);
+addEventListener('online',flush);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
+</script>
+
+</body>
+</html>
