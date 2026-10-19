@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Palavras</title>
+<title>vocab.dev</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--u:min(1vw,4.4px);--bg:#f6f5f0;--card:#f9f9f6;--tile:#f7f7f3;--ink:#1c1c17;--mute:#66665f;--line:#d8d7d1;
@@ -40,7 +40,6 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,syste
 .k{width:calc(14.4*var(--u));height:calc(15.6*var(--u));border:0;border-radius:calc(2.9*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(7.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .25s ease;padding:0}
 .k.on{opacity:1}
 .r{display:flex;align-items:center;gap:calc(2*var(--u))}#user{border:0;cursor:pointer;font-family:inherit;padding:0 calc(2.4*var(--u));gap:calc(1.4*var(--u))}#av{display:none;width:calc(4.8*var(--u));height:calc(4.8*var(--u));border-radius:50%;object-fit:cover}#un{max-width:calc(11*var(--u));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sp{position:absolute;bottom:calc(3*var(--u));left:50%;transform:translateX(-50%);border:0;background:none;color:var(--mute);opacity:.55;padding:calc(1.6*var(--u));cursor:pointer;display:flex;transition:opacity .2s}.sp:hover{opacity:.7}.sp svg{width:calc(5.4*var(--u));height:calc(5.4*var(--u))}
 .f{transition:box-shadow .5s ease}
 .f.ok{box-shadow:var(--s2),0 0 0 calc(.35*var(--u)) rgba(104,158,122,.38),0 0 calc(5*var(--u)) rgba(104,158,122,.30)}
 .f.bad{box-shadow:var(--s2),0 0 0 calc(.35*var(--u)) rgba(190,112,108,.38),0 0 calc(5*var(--u)) rgba(190,112,108,.28)}
@@ -71,9 +70,7 @@ const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=s=>document.querySelector(s),sT=$('#tr'),sM=$('#mn'),inn=$('#in'),faces=inn.children,kb=$('#kb');
 ['pt','en','es','de'].forEach(l=>[sT,sM].forEach(s=>s.add(new Option(l.toUpperCase(),l))));
 const ALPHA={de:'enirastdhulcgmobwfkzpvjyxqäöüß',en:'etaoinshrdlucmfwypvbgkjqxz',es:'eaosrnidlctumpbhqygvjfzñxkwáéíóú',pt:'aeosridmntcluvpgqbfhzjxkwyçãáéêíóôõú'};
-const VL={pt:'pt-BR',en:'en-US',de:'de-DE',es:'es-ES'};
 const TX={pt:{wd:'palavras',sc:'SCORE',out:'Sair?',tip:'Login para salvar o progresso'},en:{wd:'words',sc:'SCORE',out:'Log out?',tip:'Log in to save your progress'},es:{wd:'palabras',sc:'PUNTOS',out:'¿Cerrar sesión?',tip:'Inicia sesión para guardar tu progreso'},de:{wd:'Wörter',sc:'PUNKTE',out:'Abmelden?',tip:'Anmelden, um den Fortschritt zu speichern'}};
-const SP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>';
 let cfg={tr:'pt',mn:'de'},S,user=null,WORDS={},buf=[],dirty=new Set(),dirtyS=false,fl=null,shown={},anim={},fetching=false,wp=null;
 let cur=null,face=0,angle=0,busy=true,mode='x',lock=false,errs=0,chars=[],exp=0,lang='de';
 try{Object.assign(cfg,JSON.parse(localStorage.getItem('wp3cfg')))}catch(e){}
@@ -101,18 +98,6 @@ function tween(key,el,to){
 }
 const draw=()=>{tween('s',$('#score'),S.score);tween('c',$('#cnt'),S.count)};
 function flash(c){const f=faces[face];f.classList.add(c);setTimeout(()=>f.classList.remove(c),1100)}
-
-/* pronúncia: cb é chamado quando a fala termina */
-function say(txt,lg,cb){
-  let ended=false;const fin=()=>{if(!ended){ended=true;cb&&cb()}};
-  if(!('speechSynthesis' in window)){cb&&setTimeout(fin,600);return}
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(txt),L=VL[lg],vs=speechSynthesis.getVoices();
-  u.lang=L;u.rate=.9;
-  const v=vs.find(v=>v.lang.replace('_','-')===L)||vs.find(v=>v.lang.slice(0,2)===lg);if(v)u.voice=v;
-  u.onend=u.onerror=fin;if(cb)setTimeout(fin,7000);
-  speechSynthesis.speak(u);
-}
 
 /* ---------- servidor (visitantes e logados recebem palavras do banco) ---------- */
 async function ensure(ids){
@@ -168,7 +153,7 @@ async function syncServer(reset){
 /* m: 'x' exposição | 'w' digitar a palavra | 't' digitar a tradução */
 function fill(f,row,m){
   const a=row[cfg.mn],b=row[cfg.tr],al=[...a.w].length,bl=[...b.w].length;
-  f.innerHTML='<div class="w'+(m==='w'?' m':'')+'"></div><div class="p"></div><i class="hr"></i><div class="t'+(m==='t'?' m':'')+'"></div>'+(m==='x'?'<button class="sp" aria-label="ouvir">'+SP+'</button>':'');
+  f.innerHTML='<div class="w'+(m==='w'?' m':'')+'"></div><div class="p"></div><i class="hr"></i><div class="t'+(m==='t'?' m':'')+'"></div>';
   const[w,p,,t]=f.children;
   w.textContent=m==='w'?' '.repeat(al):a.w;
   w.style.fontSize=`calc(${Math.min(12.5,50/(al*(m==='w'?.62:.54)))} * var(--u))`;
@@ -180,7 +165,6 @@ function clearKb(){kb.querySelectorAll('.k').forEach(k=>{k.classList.remove('on'
 function present(id,first){
   cur=id;mode=(id!=='__start'&&S.w[id])?'w':'x';lock=false;errs=0;busy=true;clearKb();
   const row=WORDS[id];
-  setTimeout(()=>{if(cur===id&&mode==='x')say(row[cfg.mn].w,cfg.mn)},first?150:400);
   if(first){fill(faces[face],row,mode);setTimeout(ready,50);return}
   face^=1;fill(faces[face],row,mode);angle+=180;inn.style.transform=`rotateY(${angle}deg)`;
   setTimeout(ready,760);
@@ -249,7 +233,6 @@ function result(ok){
   dirty.add(cur);dirtyS=true;local();setTimeout(flush,300);draw();
 }
 const tap=e=>{
-  if(e.target.closest('.sp')){if(mode==='x')say(WORDS[cur][cfg.mn].w,cfg.mn);return}
   if(busy||mode!=='x')return;
   if(cur!=='__start'&&!S.w[cur]){S.w[cur]={iv:3,due:S.turn+3,k:0};dirty.add(cur);dirtyS=true;local()}
   busy=true;next();
