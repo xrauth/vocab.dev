@@ -84,6 +84,7 @@ const snap=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return nu
 const guestS=()=>snap('wp3:g:'+pair())?.S||fresh();
 const local=()=>{try{localStorage.setItem(lk(),JSON.stringify({S,d:[...dirty],ds:dirtyS}))}catch(e){}};
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const has=r=>!!(r&&r[cfg.mn]&&r[cfg.tr]); // palavra tem os dois idiomas do par atual?
 const addW=r=>{WORDS[r.id]={id:r.id,f:r.f,...r.w}};
 const cell=s=>{const m=s.trim().match(/^(.+?)\s*\((\S+?)(?:\s+(\S+))?\)$/);return{w:m[1],p:m[2][0].toUpperCase()+m[2].slice(1),g:m[3]||''}};
 const LOCAL_IDS=[];
@@ -179,7 +180,7 @@ function clearKb(){kb.querySelectorAll('.k').forEach(k=>{k.classList.remove('on'
 function present(id,first){
   cur=id;mode=(id!=='__start'&&S.w[id])?'w':'x';lock=false;errs=0;busy=true;clearKb();
   const row=WORDS[id];
-  setTimeout(()=>{if(cur===id)say(row[cfg.mn].w,cfg.mn)},first?150:400);
+  setTimeout(()=>{if(cur===id&&mode==='x')say(row[cfg.mn].w,cfg.mn)},first?150:400);
   if(first){fill(faces[face],row,mode);setTimeout(ready,50);return}
   face^=1;fill(faces[face],row,mode);angle+=180;inn.style.transform=`rotateY(${angle}deg)`;
   setTimeout(ready,760);
@@ -187,7 +188,7 @@ function present(id,first){
 function ready(){busy=false;if(mode!=='x')typing()}
 function begin(flip){cur=null;applyLang();draw();present('__start',!flip);prefetch();warm()}
 const nearBuf=()=>{
-  buf=buf.filter(i=>!S.w[i]&&i!==cur&&WORDS[i]);let b=null;const d=i=>Math.abs(WORDS[i].f-S.lv);
+  buf=buf.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i]));let b=null;const d=i=>Math.abs(WORDS[i].f-S.lv);
   for(const i of buf)if(b===null||d(i)<d(b)||(d(i)===d(b)&&WORDS[i].f>WORDS[b].f))b=i;
   return b;
 };
@@ -198,7 +199,7 @@ const pickNew=()=>{
 };
 async function next(){
   busy=true;if(wp)await wp;
-  const t=S.turn+1,ok=k=>k!==cur&&WORDS[k];
+  const t=S.turn+1,ok=k=>k!==cur&&has(WORDS[k]);
   let id=null,md=1e9;
   for(const k in S.w)if(ok(k)&&S.w[k].due<=t&&S.w[k].due<md){md=S.w[k].due;id=k}
   if(!id){const b=nearBuf();if(b===null||Math.abs(WORDS[b].f-S.lv)>12)await Promise.race([prefetch(),new Promise(r=>setTimeout(r,900))]);else if(buf.length<2)prefetch();id=pickNew()}
