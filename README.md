@@ -1,4 +1,4 @@
-# Palavras
+# vocab.dev
 
 A small single-page vocabulary game for German, English, Spanish and Portuguese. It shows you a word with its translation, brings it back a few cards later with the word hidden, and asks you to spell it one letter at a time.
 
@@ -88,47 +88,6 @@ One static HTML file, no build step, plus a [Supabase](https://supabase.com) pro
 - **Not stress-tested.** It has not been tried with a large bank or many users. Fetching new words sorts the whole table by distance to your level, which should be fine for tens of thousands of rows and not much beyond.
 - **Local progress is fragile.** Guest data lives in one browser; clearing it loses everything.
 - **Mobile audio, accessibility and screen readers, right-to-left scripts, and offline use beyond the fallback list** have not been considered or tested.
-
-## Setup
-
-1. Create a Supabase project and run `supabase.sql` in the SQL Editor. It creates the tables, security rules, server functions, quota table, and a small example word list.
-2. In *Authentication → Providers*, enable Google (this needs an OAuth client from Google Cloud) and add your site URL to the redirect URLs.
-3. Open `index.html` and replace `SUPA_URL` and `SUPA_KEY` with your project URL and public (anon) key. Never put the `service_role` key in the page.
-4. Host the HTML file anywhere static (Netlify, Cloudflare Pages, GitHub Pages).
-
-## Word data
-
-Each row in `words` is one word across the four languages: an `id` (the German word, unique), `f` (frequency, 10–100), and a JSON object `w` with `{ w: word, p: part of speech, g: gender }` for each language. Languages a word does not exist in are omitted, and such a word is simply never offered for pairs that include them.
-
-The simplest way to build the data is a flat CSV:
-
-```csv
-id,f,de_w,de_p,de_g,en_w,en_p,en_g,es_w,es_p,es_g,pt_w,pt_p,pt_g
-Haus,98,Haus,substantiv,n,house,noun,,casa,sustantivo,f,casa,substantivo,f
-```
-
-Words may contain only letters (accents, `ß` and `ñ` are fine); the on-screen keys cannot produce spaces, hyphens or apostrophes. Import the CSV into a staging table and convert it with SQL:
-
-```sql
-create table words_stage(id text,f int,
- de_w text,de_p text,de_g text, en_w text,en_p text,en_g text,
- es_w text,es_p text,es_g text, pt_w text,pt_p text,pt_g text);
-alter table words_stage enable row level security;
-
--- import the CSV (Table Editor → Import, or psql \copy), then:
-insert into words(id,f,w)
-select id,f,jsonb_strip_nulls(jsonb_build_object(
-  'de',case when nullif(de_w,'') is not null then jsonb_build_object('w',de_w,'p',initcap(de_p),'g',coalesce(de_g,'')) end,
-  'en',case when nullif(en_w,'') is not null then jsonb_build_object('w',en_w,'p',initcap(en_p),'g',coalesce(en_g,'')) end,
-  'es',case when nullif(es_w,'') is not null then jsonb_build_object('w',es_w,'p',initcap(es_p),'g',coalesce(es_g,'')) end,
-  'pt',case when nullif(pt_w,'') is not null then jsonb_build_object('w',pt_w,'p',initcap(pt_p),'g',coalesce(pt_g,'')) end))
-from words_stage
-on conflict(id) do update set f=excluded.f, w=excluded.w;
-
-drop table words_stage;
-```
-
-For frequency, any ranking works as long as you map it onto 10–100, for example `f = round(100 - 90 * ln(rank) / ln(N))`. The quality of the progression depends almost entirely on how good that ranking is.
 
 ## Status
 
