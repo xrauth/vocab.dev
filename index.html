@@ -37,7 +37,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,syste
 .t{font-size:calc(5.4*var(--u));font-weight:600;letter-spacing:-.01em}
 #kb{margin-top:calc(12*var(--u));height:calc(16*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(2.2*var(--u))}
 .row{display:flex;gap:calc(2.2*var(--u))}
-.k{width:calc(14.4*var(--u));height:calc(15.6*var(--u));border:0;border-radius:calc(2.9*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(7.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .35s ease;padding:0}
+.k{width:calc(14.4*var(--u));height:calc(15.6*var(--u));border:0;border-radius:calc(2.9*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(7.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .25s ease;padding:0}
 .k.on{opacity:1}
 .r{display:flex;align-items:center;gap:calc(2*var(--u))}#user{border:0;cursor:pointer;font-family:inherit;padding:0 calc(2.4*var(--u));gap:calc(1.4*var(--u))}#av{display:none;width:calc(4.8*var(--u));height:calc(4.8*var(--u));border-radius:50%;object-fit:cover}#un{max-width:calc(11*var(--u));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sp{position:absolute;bottom:calc(3*var(--u));left:50%;transform:translateX(-50%);border:0;background:none;color:var(--mute);opacity:.55;padding:calc(1.6*var(--u));cursor:pointer;display:flex;transition:opacity .2s}.sp:hover{opacity:.7}.sp svg{width:calc(5.4*var(--u));height:calc(5.4*var(--u))}
@@ -177,7 +177,7 @@ function fill(f,row,m){
 }
 function clearKb(){kb.querySelectorAll('.k').forEach(k=>{k.classList.remove('on','hint');k.style.transitionDelay='0s'});setTimeout(()=>{if(busy)kb.innerHTML=''},400)}
 function present(id,first){
-  cur=id;mode=(id!=='__start'&&S.w[id])?(Math.random()<.5?'w':'t'):'x';lock=false;errs=0;busy=true;clearKb();
+  cur=id;mode=(id!=='__start'&&S.w[id])?'w':'x';lock=false;errs=0;busy=true;clearKb();
   const row=WORDS[id];
   setTimeout(()=>{if(cur===id)say(row[cfg.mn].w,cfg.mn)},first?150:400);
   if(first){fill(faces[face],row,mode);setTimeout(ready,50);return}
@@ -209,13 +209,13 @@ async function next(){
 function typing(){lang=mode==='w'?cfg.mn:cfg.tr;chars=[...WORDS[cur][lang].w];exp=0;errs=0;lock=false;keys()}
 /* uma linha de 5 teclas por letra: a correta + 4 distratoras */
 function keys(){
-  const x=chars[exp].toLowerCase(),pool=ALPHA[lang],nx=x.normalize('NFD')[0],set=new Set([x]);
-  const near=[...pool].filter(c=>c!==x&&c.normalize('NFD')[0]===nx);
+  const x=chars[exp].toLowerCase(),pool=ALPHA[lang],nx=x.normalize('NFD')[0],nt=(chars[exp+1]||'').toLowerCase(),set=new Set([x]);
+  const near=[...pool].filter(c=>c!==x&&c!==nt&&c.normalize('NFD')[0]===nx);
   if(near.length&&Math.random()<.6)set.add(near[Math.random()*near.length|0]);
-  if(nx!==x&&/[a-z]/.test(nx)&&Math.random()<.6)set.add(nx);
-  for(let g=0;set.size<5&&g<300;g++)set.add(pool[Math.floor(Math.pow(Math.random(),1.5)*pool.length)]);
+  if(nx!==x&&nx!==nt&&/[a-z]/.test(nx)&&set.size<3&&Math.random()<.6)set.add(nx);
+  for(let g=0;set.size<3&&g<300;g++){const c=pool[Math.floor(Math.pow(Math.random(),1.5)*pool.length)];if(c!==nt)set.add(c)}
   kb.innerHTML='';const r=document.createElement('div');r.className='row';
-  shuf([...set]).forEach((c,i)=>{const b=document.createElement('button');b.className='k';b.textContent=c;b.dataset.c=c;b.style.transitionDelay=(i*45)+'ms';b.onclick=()=>press(b);r.appendChild(b)});
+  shuf([...set]).forEach((c,i)=>{const b=document.createElement('button');b.className='k';b.textContent=c;b.dataset.c=c;b.style.transitionDelay=(i*30)+'ms';b.onclick=()=>press(b);r.appendChild(b)});
   kb.appendChild(r);
   requestAnimationFrame(()=>requestAnimationFrame(()=>kb.querySelectorAll('.k').forEach(k=>k.classList.add('on'))));
 }
@@ -230,13 +230,13 @@ function press(b){
     return;
   }
   exp++;faces[face].children[mode==='w'?0:3].textContent=chars.map((c,i)=>i<exp?c:' ').join('');
-  lock=true;kb.querySelectorAll('.k').forEach(k=>{k.style.transitionDelay='0s';k.classList.remove('on','hint')});
+  lock=true;kb.querySelectorAll('.k').forEach(k=>{k.style.transition='opacity .16s';k.style.transitionDelay='0s';k.classList.remove('on','hint')});
   if(exp===chars.length){
     busy=true;if(!errs){result(true);flash('ok')}
     setTimeout(next,1500);
     return;
   }
-  setTimeout(()=>{lock=false;keys()},280);
+  setTimeout(()=>{lock=false;keys()},160);
 }
 function result(ok){
   const row=WORDS[cur],D=800+(100-row.f)*12+(chars.length-5)*20;
