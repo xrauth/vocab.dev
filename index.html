@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>vocab.dev</title>
+<title>Palavras</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--u:min(1vw,4.4px);--bg:#f6f5f0;--card:#f9f9f6;--tile:#f7f7f3;--ink:#1c1c17;--mute:#66665f;--line:#d8d7d1;
@@ -30,8 +30,8 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,syste
 .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.45,.05,.2,1)}
 .f{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border-radius:calc(7*var(--u));box-shadow:var(--s2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 calc(4*var(--u));box-sizing:border-box;cursor:pointer}
 .f.b{transform:rotateY(180deg)}
-.w{height:calc(15*var(--u));display:flex;align-items:center;justify-content:center;white-space:pre;line-height:1;font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.02em}
-.w.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:0}
+.w{height:calc(15*var(--u));display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.02em}
+.w.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:.14em}
 .p{font-size:calc(3.4*var(--u));font-weight:500;color:var(--mute);margin-top:calc(1.4*var(--u))}
 .hr{display:block;width:calc(23*var(--u));height:calc(.5*var(--u));min-height:2px;background:var(--line);border-radius:4px;margin:calc(4.6*var(--u)) 0 calc(4*var(--u))}
 .t{font-size:calc(5.4*var(--u));font-weight:600;letter-spacing:-.01em}
@@ -45,6 +45,8 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,syste
 .f.bad{box-shadow:var(--s2),0 0 0 calc(.35*var(--u)) rgba(190,112,108,.38),0 0 calc(5*var(--u)) rgba(190,112,108,.28)}
 .k.hint{box-shadow:var(--s3),0 0 0 calc(.3*var(--u)) rgba(104,158,122,.5),0 0 calc(2.4*var(--u)) rgba(104,158,122,.35)}
 .t.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-weight:700;white-space:pre}
+.w .c{color:rgba(28,28,23,.25);transition:color .3s ease}
+.w .c.dn{color:rgba(28,28,23,.55)}.w .c.cur{color:var(--ink)}.w.fin .c{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.in{transition-duration:.01s}}
 </style>
 </head>
@@ -72,16 +74,17 @@ const $=s=>document.querySelector(s),sT=$('#tr'),sM=$('#mn'),inn=$('#in'),faces=
 const ALPHA={de:'enirastdhulcgmobwfkzpvjyxqäöüß',en:'etaoinshrdlucmfwypvbgkjqxz',es:'eaosrnidlctumpbhqygvjfzñxkwáéíóú',pt:'aeosridmntcluvpgqbfhzjxkwyçãáéêíóôõú'};
 const TX={pt:{wd:'palavras',sc:'SCORE',out:'Sair?',tip:'Login para salvar o progresso'},en:{wd:'words',sc:'SCORE',out:'Log out?',tip:'Log in to save your progress'},es:{wd:'palabras',sc:'PUNTOS',out:'¿Cerrar sesión?',tip:'Inicia sesión para guardar tu progreso'},de:{wd:'Wörter',sc:'PUNKTE',out:'Abmelden?',tip:'Anmelden, um den Fortschritt zu speichern'}};
 let cfg={tr:'pt',mn:'de'},S,user=null,WORDS={},buf=[],dirty=new Set(),dirtyS=false,fl=null,shown={},anim={},fetching=false,wp=null;
-let cur=null,face=0,angle=0,busy=true,mode='x',lock=false,errs=0,chars=[],exp=0,lang='de';
+let cur=null,face=0,angle=0,busy=true,mode='x',lock=false,errs=0,chars=[],order=[],exp=0,lang='de';
 try{Object.assign(cfg,JSON.parse(localStorage.getItem('wp3cfg')))}catch(e){}
 sT.value=cfg.tr;sM.value=cfg.mn;
-const fresh=()=>({score:1000,count:0,turn:0,games:0,lv:100,w:{}});
+const fresh=()=>({score:1000,count:0,turn:0,games:0,lv:4,w:{}});
 const pair=()=>cfg.tr+'-'+cfg.mn,lk=()=>'wp3:'+(user?user.id:'g')+':'+pair();
 const snap=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
-const guestS=()=>snap('wp3:g:'+pair())?.S||fresh();
+const guestS=()=>{const g=snap('wp3:g:'+pair())?.S||fresh();g.lv=g.lv>15?4:Math.max(3,g.lv);return g};
 const local=()=>{try{localStorage.setItem(lk(),JSON.stringify({S,d:[...dirty],ds:dirtyS}))}catch(e){}};
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const has=r=>!!(r&&r[cfg.mn]&&r[cfg.tr]); // palavra tem os dois idiomas do par atual?
+const has=r=>!!(r&&r[cfg.mn]&&r[cfg.tr]&&/^\p{L}+$/u.test(r[cfg.mn].w)); // tem os dois idiomas do par e a palavra a digitar só tem letras
+const len=r=>[...r[cfg.mn].w].length;
 const addW=r=>{WORDS[r.id]={id:r.id,f:r.f,...r.w}};
 const cell=s=>{const m=s.trim().match(/^(.+?)\s*\((\S+?)(?:\s+(\S+))?\)$/);return{w:m[1],p:m[2][0].toUpperCase()+m[2].slice(1),g:m[3]||''}};
 const LOCAL_IDS=[];
@@ -145,7 +148,7 @@ async function syncServer(reset){
   if(G){const sh=N.turn-G.turn;for(const k in G.w)if(!N.w[k]){N.w[k]={...G.w[k],due:G.w[k].due+sh};nd.add(k)}}
   if(pend){if(pend.ds){Object.assign(N,pend.S,{w:N.w});nds=true}(pend.d||[]).forEach(i=>{if(pend.S.w[i]){N.w[i]=pend.S.w[i];nd.add(i)}})}
   try{localStorage.removeItem('wp3:g:'+p)}catch(e){}
-  S=N;dirty=nd;dirtyS=nds;draw();local();flush();warm();
+  N.lv=N.lv>15?4:Math.max(3,N.lv);S=N;dirty=nd;dirtyS=nds;draw();local();flush();warm();
   if(reset)begin(true);
 }
 
@@ -155,8 +158,8 @@ function fill(f,row,m){
   const a=row[cfg.mn],b=row[cfg.tr],al=[...a.w].length,bl=[...b.w].length;
   f.innerHTML='<div class="w'+(m==='w'?' m':'')+'"></div><div class="p"></div><i class="hr"></i><div class="t'+(m==='t'?' m':'')+'"></div>';
   const[w,p,,t]=f.children;
-  w.textContent=m==='w'?' '.repeat(al):a.w;
-  w.style.fontSize=`calc(${Math.min(12.5,50/(al*(m==='w'?.62:.54)))} * var(--u))`;
+  if(m==='w')[...a.w].forEach(()=>{const s=document.createElement('span');s.className='c';s.textContent='_';w.appendChild(s)});else w.textContent=a.w;
+  w.style.fontSize=`calc(${Math.min(12.5,50/(al*(m==='w'?.74:.58)))} * var(--u))`;
   p.textContent=a.p+(a.g?` (${a.g})`:'');
   t.textContent=m==='t'?' '.repeat(bl):b.w;
   if(m==='t')t.style.fontSize=`calc(${Math.min(5.4,50/(bl*.62))} * var(--u))`;
@@ -172,7 +175,7 @@ function present(id,first){
 function ready(){busy=false;if(mode!=='x')typing()}
 function begin(flip){cur=null;applyLang();draw();present('__start',!flip);prefetch();warm()}
 const nearBuf=()=>{
-  buf=buf.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i]));let b=null;const d=i=>Math.abs(WORDS[i].f-S.lv);
+  buf=buf.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i]));let b=null;const d=i=>Math.abs(len(WORDS[i])-S.lv);
   for(const i of buf)if(b===null||d(i)<d(b)||(d(i)===d(b)&&WORDS[i].f>WORDS[b].f))b=i;
   return b;
 };
@@ -186,15 +189,20 @@ async function next(){
   const t=S.turn+1,ok=k=>k!==cur&&has(WORDS[k]);
   let id=null,md=1e9;
   for(const k in S.w)if(ok(k)&&S.w[k].due<=t&&S.w[k].due<md){md=S.w[k].due;id=k}
-  if(!id){const b=nearBuf();if(b===null||Math.abs(WORDS[b].f-S.lv)>12)await Promise.race([prefetch(),new Promise(r=>setTimeout(r,900))]);else if(buf.length<2)prefetch();id=pickNew()}
+  if(!id){const b=nearBuf();if(b===null||Math.abs(len(WORDS[b])-S.lv)>2.5)await Promise.race([prefetch(),new Promise(r=>setTimeout(r,900))]);else if(buf.length<2)prefetch();id=pickNew()}
   if(!id){md=1e9;for(const k in S.w)if(ok(k)&&S.w[k].due<md){md=S.w[k].due;id=k}}
   if(!id)id=LOCAL_IDS[0];
   S.turn=t;dirtyS=true;local();present(id,false);warm();saveBuf();
 }
-function typing(){lang=mode==='w'?cfg.mn:cfg.tr;chars=[...WORDS[cur][lang].w];exp=0;errs=0;lock=false;keys()}
+function paint(){
+  const w=faces[face].children[0],done=new Set(order.slice(0,exp)),c=order[exp];
+  [...w.children].forEach((s,i)=>{if(done.has(i))s.textContent=chars[i];s.classList.toggle('dn',done.has(i));s.classList.toggle('cur',i===c&&exp<chars.length)});
+  w.classList.toggle('fin',exp>=chars.length);
+}
+function typing(){lang=mode==='w'?cfg.mn:cfg.tr;chars=[...WORDS[cur][lang].w];order=shuf([...chars.keys()]);exp=0;errs=0;lock=false;paint();keys()}
 /* uma linha de 5 teclas por letra: a correta + 4 distratoras */
 function keys(){
-  const x=chars[exp].toLowerCase(),pool=ALPHA[lang],nx=x.normalize('NFD')[0],nt=(chars[exp+1]||'').toLowerCase(),set=new Set([x]);
+  const x=chars[order[exp]].toLowerCase(),pool=ALPHA[lang],nx=x.normalize('NFD')[0],nt=(chars[order[exp+1]]||'').toLowerCase(),set=new Set([x]);
   const near=[...pool].filter(c=>c!==x&&c!==nt&&c.normalize('NFD')[0]===nx);
   if(near.length&&Math.random()<.6)set.add(near[Math.random()*near.length|0]);
   if(nx!==x&&nx!==nt&&/[a-z]/.test(nx)&&set.size<3&&Math.random()<.6)set.add(nx);
@@ -206,7 +214,7 @@ function keys(){
 }
 function press(b){
   if(busy||lock||b.dataset.u)return;
-  const x=chars[exp].toLowerCase();
+  const x=chars[order[exp]].toLowerCase();
   b.dataset.u=1;b.style.transitionDelay='0s';b.classList.remove('on');b.style.pointerEvents='none';
   if(b.dataset.c!==x){ // erro: pune uma única vez, revela a certa, e segue letra a letra
     if(!errs){errs=1;result(false)}
@@ -214,7 +222,7 @@ function press(b){
     kb.querySelectorAll('.k').forEach(k=>{if(k.dataset.c===x)k.classList.add('hint')});
     return;
   }
-  exp++;faces[face].children[mode==='w'?0:3].textContent=chars.map((c,i)=>i<exp?c:' ').join('');
+  exp++;paint();
   lock=true;kb.querySelectorAll('.k').forEach(k=>{k.style.transition='opacity .16s';k.style.transitionDelay='0s';k.classList.remove('on','hint')});
   if(exp===chars.length){
     busy=true;if(!errs){result(true);flash('ok')}
@@ -224,12 +232,12 @@ function press(b){
   setTimeout(()=>{lock=false;keys()},160);
 }
 function result(ok){
-  const row=WORDS[cur],D=800+(100-row.f)*12+(chars.length-5)*20;
+  const row=WORDS[cur],D=700+70*chars.length+(100-row.f)*3;
   const E=1/(1+Math.pow(10,(D-S.score)/400)),K=32*Math.max(.3,1-S.games/200);
   S.score=Math.max(0,S.score+(ok?K*(1-E):-1.5*K*E));S.games++;
   const w=S.w[cur];
   if(ok){w.iv=Math.ceil(w.iv*2.5);if(!w.k){w.k=1;S.count++}}else{w.iv=Math.max(2,Math.floor(w.iv/3));if(w.k){w.k=0;S.count--}}
-  w.due=S.turn+w.iv;S.st=ok?(S.st||0)+1:0;S.lv=Math.min(100,Math.max(10,S.lv+(ok?-(4+2*Math.min(S.st,5)):6)));
+  w.due=S.turn+w.iv;S.st=ok?(S.st||0)+1:0;S.lv=Math.min(15,Math.max(3,S.lv+(ok?.5+.1*Math.min(S.st,5):-.8)));
   dirty.add(cur);dirtyS=true;local();setTimeout(flush,300);draw();
 }
 const tap=e=>{
