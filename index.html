@@ -6,15 +6,15 @@
 <title>Palavras</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
-:root{--u:min(1vw,4.4px);--bg:#f6f5f0;--card:#f9f9f6;--tile:#f7f7f3;--ink:#1c1c17;--mute:#66665f;--line:#d8d7d1;
+:root{--u:min(1vw,4.4px,.56vh);--u:min(1vw,4.4px,.56dvh);--bg:#f6f5f0;--card:#f9f9f6;--tile:#f7f7f3;--ink:#1c1c17;--mute:#66665f;--line:#d8d7d1;
 --s1:0 2px 8px rgba(40,40,30,.10),0 1px 2px rgba(40,40,30,.06);
 --s2:0 18px 44px rgba(40,40,30,.12),0 3px 8px rgba(40,40,30,.06);
 --s3:0 3px 10px rgba(40,40,30,.10),0 1px 2px rgba(40,40,30,.06);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 
 :root{color-scheme:light}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
-#app{width:calc(100*var(--u));margin:0 auto;padding:4*var(--u) 0 8px;padding:calc(4*var(--u)) calc(4*var(--u)) 24px;box-sizing:border-box;min-height:100vh}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;height:100%;overflow:hidden}
+#app{width:calc(100*var(--u));margin:0 auto;padding:4*var(--u) 0 8px;padding:calc(4*var(--u)) calc(4*var(--u)) calc(6*var(--u));box-sizing:border-box;height:100%;overflow:hidden}
 .top{display:flex;justify-content:space-between;align-items:center}
 .l{display:flex;align-items:center;gap:calc(2.4*var(--u))}
 .pill{position:relative;display:flex;align-items:center;height:calc(6.8*var(--u));padding:0 calc(2.8*var(--u));border-radius:calc(3.4*var(--u));background:var(--card);box-shadow:var(--s1);font-size:calc(2.9*var(--u));font-weight:600;color:var(--mute);gap:calc(1.6*var(--u))}
@@ -31,22 +31,21 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,syste
 .f{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border-radius:calc(7*var(--u));box-shadow:var(--s2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 calc(4*var(--u));box-sizing:border-box;cursor:pointer}
 .f.b{transform:rotateY(180deg)}
 .w{height:calc(15*var(--u));display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.02em}
-.w.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:.14em}
+.w.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;letter-spacing:0}
 .p{font-size:calc(3.4*var(--u));font-weight:500;color:var(--mute);margin-top:calc(1.4*var(--u))}
 .hr{display:block;width:calc(23*var(--u));height:calc(.5*var(--u));min-height:2px;background:var(--line);border-radius:4px;margin:calc(4.6*var(--u)) 0 calc(4*var(--u))}
 .t{font-size:calc(5.4*var(--u));font-weight:600;letter-spacing:-.01em}
-#kb{margin-top:calc(12*var(--u));height:calc(16*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(2.2*var(--u))}
+#kb{margin-top:calc(12*var(--u));height:calc(52*var(--u));display:flex;flex-direction:column;align-items:center;gap:calc(2.2*var(--u))}
 .row{display:flex;gap:calc(2.2*var(--u))}
-.k{width:calc(14.4*var(--u));height:calc(15.6*var(--u));border:0;border-radius:calc(2.9*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(7.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .25s ease;padding:0}
+.k{width:calc(14.4*var(--u));height:calc(15.6*var(--u));border:0;border-radius:calc(2.9*var(--u));background:var(--tile);box-shadow:var(--s3);color:var(--ink);font:500 calc(7.2*var(--u)) Inter,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .25s ease,transform .12s ease;padding:0}
 .k.on{opacity:1}
 .r{display:flex;align-items:center;gap:calc(2*var(--u))}#user{border:0;cursor:pointer;font-family:inherit;padding:0 calc(2.4*var(--u));gap:calc(1.4*var(--u))}#av{display:none;width:calc(4.8*var(--u));height:calc(4.8*var(--u));border-radius:50%;object-fit:cover}#un{max-width:calc(11*var(--u));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .f{transition:box-shadow .5s ease}
 .f.ok{box-shadow:var(--s2),0 0 0 calc(.35*var(--u)) rgba(104,158,122,.38),0 0 calc(5*var(--u)) rgba(104,158,122,.30)}
 .f.bad{box-shadow:var(--s2),0 0 0 calc(.35*var(--u)) rgba(190,112,108,.38),0 0 calc(5*var(--u)) rgba(190,112,108,.28)}
+.k.tap{transform:scale(.9)}
 .k.hint{box-shadow:var(--s3),0 0 0 calc(.3*var(--u)) rgba(104,158,122,.5),0 0 calc(2.4*var(--u)) rgba(104,158,122,.35)}
 .t.m{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-weight:700;white-space:pre}
-.w .c{color:rgba(28,28,23,.25);transition:color .3s ease}
-.w .c.dn{color:rgba(28,28,23,.55)}.w .c.cur{color:var(--ink)}.w.fin .c{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.in{transition-duration:.01s}}
 </style>
 </head>
@@ -74,7 +73,7 @@ const $=s=>document.querySelector(s),sT=$('#tr'),sM=$('#mn'),inn=$('#in'),faces=
 const ALPHA={de:'enirastdhulcgmobwfkzpvjyxqäöüß',en:'etaoinshrdlucmfwypvbgkjqxz',es:'eaosrnidlctumpbhqygvjfzñxkwáéíóú',pt:'aeosridmntcluvpgqbfhzjxkwyçãáéêíóôõú'};
 const TX={pt:{wd:'palavras',sc:'SCORE',out:'Sair?',tip:'Login para salvar o progresso'},en:{wd:'words',sc:'SCORE',out:'Log out?',tip:'Log in to save your progress'},es:{wd:'palabras',sc:'PUNTOS',out:'¿Cerrar sesión?',tip:'Inicia sesión para guardar tu progreso'},de:{wd:'Wörter',sc:'PUNKTE',out:'Abmelden?',tip:'Anmelden, um den Fortschritt zu speichern'}};
 let cfg={tr:'pt',mn:'de'},S,user=null,WORDS={},buf=[],dirty=new Set(),dirtyS=false,fl=null,shown={},anim={},fetching=false,wp=null;
-let cur=null,face=0,angle=0,busy=true,mode='x',lock=false,errs=0,chars=[],order=[],exp=0,lang='de';
+let cur=null,face=0,angle=0,busy=true,mode='x',lock=false,errs=0,chars=[],left={},exp=0,lang='de';
 try{Object.assign(cfg,JSON.parse(localStorage.getItem('wp3cfg')))}catch(e){}
 sT.value=cfg.tr;sM.value=cfg.mn;
 const fresh=()=>({score:1000,count:0,turn:0,games:0,lv:3,w:{}});
@@ -109,7 +108,7 @@ async function ensure(ids){
 }
 async function refill(){
   const ex=[...buf,...(cur&&cur!=='__start'?[cur]:[]),...(user?[...dirty]:Object.keys(S.w))];
-  const{data,error}=await sb.rpc('new_words',{p_pair:pair(),p_lv:Math.floor(S.lv),p_n:5,p_exclude:ex});
+  const{data,error}=await sb.rpc('new_words',{p_pair:pair(),p_lv:lvp().L,p_n:5,p_exclude:ex});
   if(error)throw error;
   if(!data.length)hold=Date.now()+60000; // cota diária esgotada: não insistir por 1 min
   data.forEach(r=>{addW(r);if(!S.w[r.id]&&!buf.includes(r.id))buf.push(r.id)});saveBuf();
@@ -145,7 +144,7 @@ async function syncServer(reset){
   const B=s?{score:s.score,count:s.known,turn:s.turn,games:s.games,lv:s.lv}:(G||fresh());
   const N={score:B.score,count:B.count,turn:B.turn,games:B.games,lv:B.lv,w:{}},nd=new Set();let nds=!s&&!!G;
   pr.forEach(r=>N.w[r.word_id]={due:r.due,iv:r.iv,k:r.k});
-  if(G){const sh=N.turn-G.turn;for(const k in G.w)if(!N.w[k]){N.w[k]={...G.w[k],due:G.w[k].due+sh};nd.add(k)}}
+  if(G){const sh=N.turn-G.turn;for(const k in G.w)if(!N.w[k]){N.w[k]={...G.w[k],due:G.w[k].due>=1e9?G.w[k].due:G.w[k].due+sh};nd.add(k)}}
   if(pend){if(pend.ds){Object.assign(N,pend.S,{w:N.w});nds=true}(pend.d||[]).forEach(i=>{if(pend.S.w[i]){N.w[i]=pend.S.w[i];nd.add(i)}})}
   try{localStorage.removeItem('wp4:g:'+p)}catch(e){}
   N.lv=N.lv>15?3:Math.max(3,N.lv);S=N;dirty=nd;dirtyS=nds;draw();local();flush();warm();
@@ -158,8 +157,8 @@ function fill(f,row,m){
   const a=row[cfg.mn],b=row[cfg.tr],al=[...a.w].length,bl=[...b.w].length;
   f.innerHTML='<div class="w'+(m==='w'?' m':'')+'"></div><div class="p"></div><i class="hr"></i><div class="t'+(m==='t'?' m':'')+'"></div>';
   const[w,p,,t]=f.children;
-  if(m==='w')[...a.w].forEach(()=>{const s=document.createElement('span');s.className='c';s.textContent='_';w.appendChild(s)});else w.textContent=a.w;
-  w.style.fontSize=`calc(${Math.min(12.5,50/(al*(m==='w'?.74:.58)))} * var(--u))`;
+  w.textContent=m==='w'?' '.repeat(al):a.w;
+  w.style.fontSize=`calc(${Math.min(12.5,50/(al*(m==='w'?.62:.54)))} * var(--u))`;
   p.textContent=a.p+(a.g?` (${a.g})`:'');
   t.textContent=m==='t'?' '.repeat(bl):b.w;
   if(m==='t')t.style.fontSize=`calc(${Math.min(5.4,50/(bl*.62))} * var(--u))`;
@@ -174,70 +173,85 @@ function present(id,first){
 }
 function ready(){busy=false;if(mode!=='x')typing()}
 function begin(flip){cur=null;applyLang();draw();present('__start',!flip);prefetch();warm()}
+const quota=L=>L-1,grad=n=>n<=4?1:n<=6?2:n<=8?3:4,GR=2e9;   // quota: acertos p/ subir de nível; grad: acertos seguidos p/ "formar" a palavra
+const lvp=()=>{const L=Math.min(30,Math.max(3,Math.floor(S.lv+1e-6)));return{L,q:Math.min(quota(L)-1,Math.max(0,Math.round((S.lv-L)*100)))}}; // lv = nível + progresso/100
+const dist=(i,L)=>{const n=len(WORDS[i]);return n>L?100+n-L:L-n};   // palavras mais longas que o nível ficam suspensas
 const nearBuf=()=>{
-  buf=buf.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i]));let b=null;const d=i=>Math.abs(len(WORDS[i])-Math.floor(S.lv));
-  for(const i of buf)if(b===null||d(i)<d(b)||(d(i)===d(b)&&(len(WORDS[i])<len(WORDS[b])||(len(WORDS[i])===len(WORDS[b])&&WORDS[i].f>WORDS[b].f))))b=i;
-  return b;
+  const{L}=lvp();buf=buf.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i]));
+  let m=1e9;buf.forEach(i=>{m=Math.min(m,dist(i,L))});
+  const c=buf.filter(i=>dist(i,L)===m);
+  return c.length?c[Math.random()*c.length|0]:null;
 };
 const pickNew=()=>{
   const b=nearBuf();if(b!==null)return b;
-  const lc=LOCAL_IDS.filter(i=>!S.w[i]&&i!==cur);   // banco indisponível: palavra local aleatória
-  return lc.length?lc[Math.random()*lc.length|0]:null;
+  const{L}=lvp(),lc=LOCAL_IDS.filter(i=>!S.w[i]&&i!==cur&&has(WORDS[i])),sh=lc.filter(i=>len(WORDS[i])<=L),p=sh.length?sh:lc;
+  return p.length?p[Math.random()*p.length|0]:null;   // banco indisponível: palavra local aleatória
+};
+const pickGrad=(ok,L)=>{ // palavra já "formada": só reaparece de vez em quando, mais provável se for longa
+  const c=[];let tot=0;
+  for(const k in S.w)if(S.w[k].due>=1e9&&ok(k)){const n=len(WORDS[k]);if(n<=L){c.push([k,n*n]);tot+=n*n}}
+  let r=Math.random()*tot;for(const[k,w]of c){if((r-=w)<0)return k}
+  return null;
 };
 async function next(){
   busy=true;if(wp)await wp;
-  const t=S.turn+1,ok=k=>k!==cur&&has(WORDS[k]);
+  const t=S.turn+1,{L}=lvp(),ok=k=>k!==cur&&has(WORDS[k]);
   let id=null,md=1e9;
-  for(const k in S.w)if(ok(k)&&S.w[k].due<=t&&S.w[k].due<md){md=S.w[k].due;id=k}
-  if(!id){const b=nearBuf();if(b===null||Math.abs(len(WORDS[b])-Math.floor(S.lv))>1)await Promise.race([prefetch(),new Promise(r=>setTimeout(r,900))]);else if(buf.length<2)prefetch();id=pickNew()}
+  for(const k in S.w)if(ok(k)&&len(WORDS[k])<=L&&S.w[k].due<=t&&S.w[k].due<md){md=S.w[k].due;id=k}
+  if(!id&&Math.random()<.15)id=pickGrad(ok,L);
+  if(!id){
+    const b=nearBuf();
+    if(b===null||dist(b,L)>1)await Promise.race([prefetch(),new Promise(r=>setTimeout(r,900))]);else if(buf.length<2)prefetch();
+    id=pickNew();
+  }
+  if(!id)id=pickGrad(ok,99);
   if(!id){md=1e9;for(const k in S.w)if(ok(k)&&S.w[k].due<md){md=S.w[k].due;id=k}}
   if(!id)id=LOCAL_IDS[0];
   S.turn=t;dirtyS=true;local();present(id,false);warm();saveBuf();
 }
-function paint(){
-  const w=faces[face].children[0],done=new Set(order.slice(0,exp)),c=order[exp];
-  [...w.children].forEach((s,i)=>{if(done.has(i))s.textContent=chars[i];s.classList.toggle('dn',done.has(i));s.classList.toggle('cur',i===c&&exp<chars.length)});
-  w.classList.toggle('fin',exp>=chars.length);
-}
-function typing(){lang=mode==='w'?cfg.mn:cfg.tr;chars=[...WORDS[cur][lang].w];order=shuf([...chars.keys()]);exp=0;errs=0;lock=false;paint();keys()}
-/* uma linha de 5 teclas por letra: a correta + 4 distratoras */
-function keys(){
-  const x=chars[order[exp]].toLowerCase(),pool=ALPHA[lang],nx=x.normalize('NFD')[0],nt=(chars[order[exp+1]]||'').toLowerCase(),set=new Set([x]);
-  const near=[...pool].filter(c=>c!==x&&c!==nt&&c.normalize('NFD')[0]===nx);
-  if(near.length&&Math.random()<.6)set.add(near[Math.random()*near.length|0]);
-  if(nx!==x&&nx!==nt&&/[a-z]/.test(nx)&&set.size<3&&Math.random()<.6)set.add(nx);
-  for(let g=0;set.size<3&&g<300;g++){const c=pool[Math.floor(Math.pow(Math.random(),1.5)*pool.length)];if(c!==nt)set.add(c)}
-  kb.innerHTML='';const r=document.createElement('div');r.className='row';
-  shuf([...set]).forEach((c,i)=>{const b=document.createElement('button');b.className='k';b.textContent=c;b.dataset.c=c;b.style.transitionDelay=(i*30)+'ms';b.onclick=()=>press(b);r.appendChild(b)});
-  kb.appendChild(r);
+/* teclado fixo: 14 teclas (5+5+4) = letras da palavra embaralhadas + distratoras que não aparecem na palavra */
+function typing(){
+  lang=cfg.mn;chars=[...WORDS[cur][lang].w];exp=0;errs=0;
+  left={};chars.forEach(c=>{c=c.toLowerCase();left[c]=(left[c]||0)+1});
+  const L=Object.keys(left),pool=ALPHA[lang];   // letras únicas da palavra + distratoras (nunca presentes na palavra)
+  for(let g=0;L.length<14&&g<500;g++){const c=pool[Math.floor(Math.pow(Math.random(),1.3)*pool.length)];if(!L.includes(c))L.push(c)}
+  shuf(L);kb.innerHTML='';let n=0,d=0;const sizes=[5,5,4];
+  while(n<L.length){
+    const sz=sizes.shift()||5,r=document.createElement('div');r.className='row';
+    L.slice(n,n+sz).forEach(c=>{const b=document.createElement('button');b.className='k';b.textContent=c;b.dataset.c=c;b.style.transitionDelay=(d++*18)+'ms';b.onclick=()=>press(b);r.appendChild(b)});
+    kb.appendChild(r);n+=sz;
+  }
   requestAnimationFrame(()=>requestAnimationFrame(()=>kb.querySelectorAll('.k').forEach(k=>k.classList.add('on'))));
 }
-function press(b){
-  if(busy||lock||b.dataset.u)return;
-  const x=chars[order[exp]].toLowerCase();
-  b.dataset.u=1;b.style.transitionDelay='0s';b.classList.remove('on');b.style.pointerEvents='none';
-  if(b.dataset.c!==x){ // erro: pune uma única vez, revela a certa, e segue letra a letra
+const buzz=b=>{b.classList.add('tap');setTimeout(()=>b.classList.remove('tap'),120)};
+const gone=b=>{b.dataset.u=1;b.style.transitionDelay='0s';b.classList.remove('on');b.style.pointerEvents='none'};
+function press(b){ // sem esperar animação: dá para digitar rápido
+  if(busy||b.dataset.u)return;
+  const c=b.dataset.c,x=chars[exp].toLowerCase();
+  if(c!==x){ // erro: pune uma vez, revela a certa, segue
     if(!errs){errs=1;result(false)}
     flash('bad');
-    kb.querySelectorAll('.k').forEach(k=>{if(k.dataset.c===x)k.classList.add('hint')});
+    if(left[c])buzz(b);else gone(b);   // letra ainda necessária não some
+    const h=[...kb.querySelectorAll('.k')].find(k=>!k.dataset.u&&k.dataset.c===x);if(h)h.classList.add('hint');
     return;
   }
-  exp++;paint();
-  lock=true;kb.querySelectorAll('.k').forEach(k=>{k.style.transition='opacity .16s';k.style.transitionDelay='0s';k.classList.remove('on','hint')});
-  if(exp===chars.length){
-    busy=true;if(!errs){result(true);flash('ok')}
-    setTimeout(next,1500);
-    return;
-  }
-  setTimeout(()=>{lock=false;keys()},160);
+  kb.querySelectorAll('.hint').forEach(k=>k.classList.remove('hint'));
+  exp++;left[c]--;
+  if(left[c]>0)buzz(b);else gone(b);   // some só quando a letra se esgota na palavra
+  faces[face].children[0].textContent=chars.map((ch,i)=>i<exp?ch:' ').join('');
+  if(exp===chars.length){busy=true;if(!errs){result(true);flash('ok')}setTimeout(next,1500)}
 }
 function result(ok){
-  const row=WORDS[cur],D=700+70*chars.length+(100-row.f)*3;
+  const row=WORDS[cur],n=chars.length,D=700+70*n+(100-row.f)*3;
   const E=1/(1+Math.pow(10,(D-S.score)/400)),K=32*Math.max(.3,1-S.games/200);
   S.score=Math.max(0,S.score+(ok?K*(1-E):-1.5*K*E));S.games++;
   const w=S.w[cur];
-  if(ok){w.iv=Math.ceil(w.iv*2.5);if(!w.k){w.k=1;S.count++}}else{w.iv=Math.max(2,Math.floor(w.iv/3));if(w.k){w.k=0;S.count--}}
-  w.due=S.turn+w.iv;S.st=ok?(S.st||0)+1:0;{const L=Math.floor(S.lv);if(!ok||chars.length>=L)S.lv=Math.min(15,Math.max(3,S.lv+(ok?1:-.7)/(L*(L-1))))}
+  if(ok){w.iv=Math.ceil(w.iv*2.5);if(!w.k)S.count++;w.k++}else{w.iv=Math.max(2,Math.floor(w.iv/3));if(w.k)S.count--;w.k=0}
+  w.due=ok&&w.k>=grad(n)?GR:S.turn+w.iv;   // acertos seguidos suficientes: sai do agendamento
+  let{L,q}=lvp();
+  if(ok){if(n>=L){q++;if(q>=quota(L)){L++;q=0}}}
+  else if(n>=L-1){L=Math.max(3,L-1);q=0}
+  S.lv=L+q/100;
   dirty.add(cur);dirtyS=true;local();setTimeout(flush,300);draw();
 }
 const tap=e=>{
